@@ -510,5 +510,11 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderRadius: 50,
     backgroundColor: '#f18f70'
-  }
+  },
+  recordingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '100%'
+  },
 });
