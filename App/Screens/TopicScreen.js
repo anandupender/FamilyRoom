@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import Expo, { Asset, Audio, FileSystem, Font, Permissions } from 'expo';
 
 const data = [
   {
@@ -27,6 +28,26 @@ export default class TopicScreen extends React.Component {
       data: data,
     }
   }
+
+  // componentDidMount() {
+  //   this._askForPermissions();
+  // }
+  //
+  // _askForPermissions = async () => {
+  //   const response = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+  // };
+  //
+  // _record = () => {
+  //   try {
+  //     const recording = new Audio.Recording();
+  //     await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+  //     await recording.startAsync();
+  //     // You are now recording!
+  //   } catch (error) {
+  //     // An error occurred!
+  //     log('nooo');
+  //   }
+  // }
 
   render() {
     //this contains all paramaters sent from previous profile screen
@@ -64,8 +85,10 @@ export default class TopicScreen extends React.Component {
 
 
         <View style={styles.audio}>
-          <View style={styles.audioImage}>
-          </View>
+          <TouchableOpacity onPress={() => this._record()}>
+            <View style={styles.audioImage}>
+            </View>
+          </TouchableOpacity>
         </View>
 
       </View>
@@ -120,8 +143,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#71f2e1',
-    width: '100%'
   },
   audioImage: {
     width: 100,

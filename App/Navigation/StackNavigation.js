@@ -1,13 +1,15 @@
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 import ProfileScreen from '../Screens/ProfileScreen'
 import TopicScreen from '../Screens/TopicScreen'
+import AudioScreen from '../../AudioScreen'
 
 const AppNavigator = createStackNavigator({
   Profile: { screen: ProfileScreen },
   Topic: { screen: TopicScreen },
+  Audio: {screen: AudioScreen }
 }, {
   headerMode: 'float',
-  initialRouteName: 'Profile',
+  initialRouteName: 'Audio',
 
   navigationOptions: ({navigation}) => {
 
