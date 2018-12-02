@@ -1,9 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Dimensions, TouchableOpacity} from 'react-native';
-import { Card } from "react-native-elements";
-
-const { width } = Dimensions.get('window');
-const height = width * 0.8;
+import { StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
 
 const data = [
   { topic: "Moving" },
