@@ -419,26 +419,6 @@ export default class TopicScreen extends React.Component {
             </Text>
           </View>
           <View style={[styles.buttonsContainerBase, styles.buttonsContainerTopRow]}>
-            <View style={styles.volumeContainer}>
-              <TouchableOpacity
-                underlayColor={BACKGROUND_COLOR}
-                style={styles.wrapper}
-                onPress={this._onMutePressed}
-                disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
-                <Image
-                  style={styles.image}
-                  source={this.state.muted ? ICON_MUTED_BUTTON.module : ICON_UNMUTED_BUTTON.module}
-                />
-              </TouchableOpacity>
-              <Slider
-                style={styles.volumeSlider}
-                trackImage={ICON_TRACK_1.module}
-                thumbImage={ICON_THUMB_2.module}
-                value={1}
-                onValueChange={this._onVolumeSliderValueChange}
-                disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
-              />
-            </View>
             <View style={styles.playStopContainer}>
               <TouchableOpacity
                 underlayColor={BACKGROUND_COLOR}
@@ -450,35 +430,8 @@ export default class TopicScreen extends React.Component {
                   source={this.state.isPlaying ? ICON_PAUSE_BUTTON.module : ICON_PLAY_BUTTON.module}
                 />
               </TouchableOpacity>
-              <TouchableOpacity
-                underlayColor={BACKGROUND_COLOR}
-                style={styles.wrapper}
-                onPress={this._onStopPressed}
-                disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
-                <Image style={styles.image} source={ICON_STOP_BUTTON.module} />
-              </TouchableOpacity>
             </View>
             <View />
-          </View>
-          <View style={[styles.buttonsContainerBase, styles.buttonsContainerBottomRow]}>
-            <Text style={styles.timestamp}>Rate:</Text>
-            <Slider
-              style={styles.rateSlider}
-              trackImage={ICON_TRACK_1.module}
-              thumbImage={ICON_THUMB_1.module}
-              value={this.state.rate / RATE_SCALE}
-              onSlidingComplete={this._onRateSliderSlidingComplete}
-              disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
-            />
-            <TouchableOpacity
-              underlayColor={BACKGROUND_COLOR}
-              style={styles.wrapper}
-              onPress={this._onPitchCorrectionPressed}
-              disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
-              <Text>
-                PC: {this.state.shouldCorrectPitch ? 'yes' : 'no'}
-              </Text>
-            </TouchableOpacity>
           </View>
           <View />
         </View>
