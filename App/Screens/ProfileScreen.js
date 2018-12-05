@@ -36,7 +36,7 @@ export default class ProfileScreen extends React.Component {
               return (
                 <TouchableOpacity onPress={() => this._goToTopic(rowData.title, rowData.questions)} style={styles.recordContainer}>
                   <Image
-                    source={require('../../assets/images/previous/record.png')}
+                    source={require('../../assets/images/record.png')}
                     style={styles.record}
                   />
                   <Text style={styles.recordTitle}> {rowData.title} </Text>
