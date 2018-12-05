@@ -74,6 +74,7 @@ export default class TopicScreen extends React.Component {
       shouldCorrectPitch: true,
       volume: 1.0,
       rate: 1.0,
+      recording: "test",
       data: data,
     };
     this.recordingSettings = JSON.parse(JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY));
@@ -171,9 +172,30 @@ export default class TopicScreen extends React.Component {
     });
     try {
       await this.recording.stopAndUnloadAsync();
+      await this.setAudioMode({ allowsRecordingIOS: false });
     } catch (error) {
-      // Do nothing -- we are already unloaded.
+      console.log(error); // eslint-disable-line
     }
+
+    if (this.recording) {
+      var fileUrl = this.recording.getURI();
+      // props.recording.setOnRecordingStatusUpdate(null);
+      this.setState({ recording: fileUrl });
+    }
+
+    //MAGIC HAPPENS HERE. CURRENTLY THIS IS HERE JUST TO TEST PLAYING THE AUDIO BACK
+    //FROM THE RECENTLY CREATED URL
+
+    try {
+      const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
+        { uri: this.state.recording },
+        { shouldPlay: true }
+      );
+      // Your sound is playing!
+    } catch (error) {
+      // An error occurred!
+    }
+
     const info = await FileSystem.getInfoAsync(this.recording.getURI());
     uris.push(this.recording.getURI());
 
