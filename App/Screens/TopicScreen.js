@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   categoryContainer: {
     flex: 2,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   categoryImage: {
     width: 150,
@@ -440,16 +440,16 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderBottomWidth: 2,
     borderColor: '#ededed',
-    marginLeft: 30,
-    marginRight: 30
+    marginLeft: 20,
+    marginRight: 20,
   },
   sampleQuestionsTitle: {
     fontSize: 28,
     marginTop:20,
   },
   sampleQuestionCard: {
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
     borderWidth: 2,
     borderRadius: 15,
     borderColor: '#ededed',
@@ -460,10 +460,11 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   audioContainer: {
-    flex: 3,
+    flex: 2,
     alignItems: 'center',
     justifyContent: 'space-around',
     flexDirection: 'column',
+    padding: 15
   },
   recordingContainer: {
     flexDirection: 'column',
@@ -481,7 +482,8 @@ const styles = StyleSheet.create({
   },
   image: {
     backgroundColor: '#ededed'
-  },playerButton:{
+  },
+  playerButton:{
     alignItems: 'center',
     justifyContent: 'center',
     height:50,
