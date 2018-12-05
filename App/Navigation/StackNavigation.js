@@ -9,7 +9,7 @@ const AppNavigator = createStackNavigator({
   Onboarding: { screen: OnboardingScreen}
 }, {
   headerMode: 'float',
-  initialRouteName: 'Onboarding',
+  initialRouteName: 'Profile',
 
   navigationOptions: ({navigation}) => {
 

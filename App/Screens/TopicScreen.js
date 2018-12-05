@@ -31,12 +31,12 @@ class Icon {
   }
 }
 
-const ICON_RECORD_BUTTON = new Icon(require('../../assets/images/record_button.png'), 70, 119);
+const ICON_RECORD_BUTTON = new Icon(require('../../assets/images/previous/micButton.png'), 70, 119);
 const ICON_RECORDING = new Icon(require('../../assets/images/record_icon.png'), 20, 14);
 
-const ICON_PLAY_BUTTON = new Icon(require('../../assets/images/play_button.png'), 34, 51);
+const ICON_PLAY_BUTTON = new Icon(require('../../assets/images/previous/play.png'), 34, 51);
 const ICON_PAUSE_BUTTON = new Icon(require('../../assets/images/pause_button.png'), 34, 51);
-const ICON_STOP_BUTTON = new Icon(require('../../assets/images/stop_button.png'), 22, 22);
+const ICON_STOP_BUTTON = new Icon(require('../../assets/images/previous/stop.png'), 22, 22);
 
 const ICON_MUTED_BUTTON = new Icon(require('../../assets/images/muted_button.png'), 67, 58);
 const ICON_UNMUTED_BUTTON = new Icon(require('../../assets/images/unmuted_button.png'), 67, 58);
@@ -344,8 +344,10 @@ export default class TopicScreen extends React.Component {
       <View style={styles.container}>
 
         <View style={styles.category}>
-          <View style={styles.categoryImage}>
-          </View>
+          <Image
+            source={require('../../assets/images/previous/recordPlayer.png')}
+            style={styles.categoryImage}
+          />
 
           <Text style={styles.categoryTitle}> On {params.topic} </Text>
         </View>
@@ -489,8 +491,7 @@ const styles = StyleSheet.create({
   categoryImage: {
     width: 200,
     height: 100,
-    borderWidth: 3,
-    backgroundColor: '#71f2e1',
+    resizeMode: 'contain'
   },
   categoryTitle: {
     fontSize: 36,
@@ -499,8 +500,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderTopWidth: 1,
-    borderBottomWidth: 1
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: '#ededed',
+    marginLeft: 40,
+    marginRight: 40
   },
   sampleQuestionsTitle: {
     fontSize: 28,
@@ -510,6 +514,7 @@ const styles = StyleSheet.create({
     height: 150,
     borderWidth: 2,
     borderRadius: 15,
+    borderColor: '#ededed',
     margin: 15,
     marginBottom: 0,
     padding: 10,
@@ -534,4 +539,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%'
   },
+  image: {
+    backgroundColor: '#ededed'
+  }
 });
