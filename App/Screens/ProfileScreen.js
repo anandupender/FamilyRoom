@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
 
 const data = [
   { topic: "Moving" },
@@ -27,8 +27,7 @@ export default class ProfileScreen extends React.Component {
       <View style={styles.container}>
 
         <View style={styles.category}>
-          <View style={styles.categoryImage}>
-          </View>
+          <Image style={styles.categoryImage} source={require('../../assets/images/mina.jpg')}/>
 
           <Text style={styles.categoryTitle}> Baji's Records </Text>
         </View>
@@ -42,8 +41,7 @@ export default class ProfileScreen extends React.Component {
             renderItem={({ item: rowData }) => {
               return (
                 <TouchableOpacity onPress={() => this._goToTopic(rowData.topic)} style={styles.recordContainer}>
-                  <View style={styles.record}>
-                  </View>
+                  <Image style={styles.record} source={require('../../assets/images/record.png')}/>
                   <Text style={styles.recordTitle}> {rowData.topic} </Text>
                 </TouchableOpacity>
               );
@@ -71,10 +69,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   categoryImage: {
-    width: 200,
-    height: 100,
-    borderWidth: 3,
-    backgroundColor: '#71f2e1',
+    width: 220,
+    height: 150,
+    // borderWidth: 3,
+    backgroundColor: '#EEEEEE',
   },
   categoryTitle: {
     fontSize: 36,
@@ -103,6 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   recordTitle:{
+    marginTop:10,
     fontSize:18
   }
 });

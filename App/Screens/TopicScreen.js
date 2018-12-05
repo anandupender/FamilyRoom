@@ -1,56 +1,23 @@
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Slider, Dimensions, AsyncStorage } from 'react-native';
 import Expo, { Asset, Audio, FileSystem, Font, Permissions } from 'expo';
+import { Icon } from 'react-native-elements'
 
 const data = [
-  {
-    question: "\"How many different times have you moved?\""
-  },
-  {
-    question: "\"When did you move to your current home?\""
-  },
-  {
-    question: "\"Have you ever lived alone?\""
-  },
-  {
-    question: "\"What was your scariest move?\""
-  },
-  {
-    question: "\"Can you tell me about your favorite objects you always live with?\""
-  }
+  { question: "\"How many different times have you moved?\"" },
+  { question: "\"When did you move to your current home?\"" },
+  { question: "\"Have you ever lived alone?\"" },
+  { question: "\"What was your scariest move?\"" },
+  { question: "\"Can you tell me about your favorite objects you always live with?\"" }
 ];
 
 const uris = [];
-
-class Icon {
-  constructor(module, width, height) {
-    this.module = module;
-    this.width = width;
-    this.height = height;
-    Asset.fromModule(this.module).downloadAsync();
-  }
-}
-
-const ICON_RECORD_BUTTON = new Icon(require('../../assets/images/previous/micButton.png'), 70, 119);
-const ICON_RECORDING = new Icon(require('../../assets/images/record_icon.png'), 20, 14);
-
-const ICON_PLAY_BUTTON = new Icon(require('../../assets/images/previous/play.png'), 34, 51);
-const ICON_PAUSE_BUTTON = new Icon(require('../../assets/images/pause_button.png'), 34, 51);
-const ICON_STOP_BUTTON = new Icon(require('../../assets/images/previous/stop.png'), 22, 22);
-
-const ICON_MUTED_BUTTON = new Icon(require('../../assets/images/muted_button.png'), 67, 58);
-const ICON_UNMUTED_BUTTON = new Icon(require('../../assets/images/unmuted_button.png'), 67, 58);
-
-const ICON_TRACK_1 = new Icon(require('../../assets/images/track_1.png'), 166, 5);
-const ICON_THUMB_1 = new Icon(require('../../assets/images/thumb_1.png'), 18, 19);
-const ICON_THUMB_2 = new Icon(require('../../assets/images/thumb_2.png'), 15, 19);
 
 const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get('window');
 const BACKGROUND_COLOR = '#FFF8ED';
 const LIVE_COLOR = '#FF0000';
 const DISABLED_OPACITY = 0.5;
 const RATE_SCALE = 3.0;
-
 
 export default class TopicScreen extends React.Component {
   constructor(props) {
@@ -202,8 +169,9 @@ export default class TopicScreen extends React.Component {
       const testAudioUrl = await AsyncStorage.getItem('audio4');
       const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
         { uri: testAudioUrl },
-        { shouldPlay: true }
+        { shouldPlay: false }
       );
+      await soundObject.playAsync();
       // Your sound is playing!
     } catch (error) {
       // An error occurred!
@@ -378,18 +346,15 @@ export default class TopicScreen extends React.Component {
     return (
       <View style={styles.container}>
 
-        <View style={styles.category}>
+        <View style={styles.categoryContainer}>
           <Image
-            source={require('../../assets/images/previous/recordPlayer.png')}
+            source={require('../../assets/images/recordPlayer.png')}
             style={styles.categoryImage}
           />
-
-          <Text style={styles.categoryTitle}> On {params.topic} </Text>
+          <Text style={styles.categoryTitle}> On {(params !== undefined) ? params.topic : 'Sample Topic'} </Text>
         </View>
 
-
-
-        <View style={styles.sampleQuestions}>
+        <View style={styles.sampleQuestionsContainer}>
           <Text style={styles.sampleQuestionsTitle}> Sample Questions </Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
@@ -407,62 +372,24 @@ export default class TopicScreen extends React.Component {
         </View>
 
 
-
-        <View style={styles.audio}>
-
-        <View
-          style={[
-            styles.halfScreenContainer,
-            {
-              opacity: this.state.isLoading ? DISABLED_OPACITY : 1.0,
-            },
-          ]}>
-          <View />
+        <View style={styles.audioContainer}>
           <View style={styles.recordingContainer}>
-            <View />
             <TouchableOpacity
-              style={styles.wrapper}
+              style={styles.playerButton}
               onPress={this._onRecordPressed}
               disabled={this.state.isLoading}>
-              <Image style={styles.image} source={ICON_RECORD_BUTTON.module} />
+              <Icon name='mic' color='#FFFFFF' type='feather'/>
             </TouchableOpacity>
             <View style={styles.recordingDataContainer}>
-              <View />
-              <Text style={styles.liveText}>
-                {this.state.isRecording ? 'LIVE' : ''}
+              <Text style={styles.recordingTimestamp}>
+                {this._getRecordingTimestamp()}
               </Text>
-              <View style={styles.recordingDataRowContainer}>
-                <Image
-                  style={[styles.image, { opacity: this.state.isRecording ? 1.0 : 0.0 }]}
-                  source={ICON_RECORDING.module}
-                />
-                <Text style={styles.recordingTimestamp}>
-                  {this._getRecordingTimestamp()}
-                </Text>
-              </View>
-              <View />
             </View>
-            <View />
           </View>
-          <View />
-        </View>
 
-
-
-        <View
-          style={[
-            styles.halfScreenContainer,
-            {
-              opacity:
-                !this.state.isPlaybackAllowed || this.state.isLoading ? DISABLED_OPACITY : 1.0,
-            },
-          ]}>
-          <View />
           <View style={styles.playbackContainer}>
             <Slider
               style={styles.playbackSlider}
-              trackImage={ICON_TRACK_1.module}
-              thumbImage={ICON_THUMB_1.module}
               value={this._getSeekSliderPosition()}
               onValueChange={this._onSeekSliderValueChange}
               onSlidingComplete={this._onSeekSliderSlidingComplete}
@@ -476,33 +403,16 @@ export default class TopicScreen extends React.Component {
             <View style={styles.playStopContainer}>
               <TouchableOpacity
                 underlayColor={BACKGROUND_COLOR}
-                style={styles.wrapper}
+                style={styles.playerButton}
                 onPress={this._onPlayPausePressed}
                 disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
-                <Image
-                  style={styles.image}
-                  source={this.state.isPlaying ? ICON_PAUSE_BUTTON.module : ICON_PLAY_BUTTON.module}
-                />
+                <Icon
+                  name={this.state.isPlaying ? "pause" : "play"}
+                  type='feather'
+                  color='#FFFFFF' />
               </TouchableOpacity>
             </View>
-            <View />
           </View>
-          <View />
-        </View>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         </View>
 
       </View>
@@ -518,31 +428,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  category: {
-    flex: 1,
+  categoryContainer: {
+    flex: 2,
     alignItems: 'center',
     justifyContent: 'center'
   },
   categoryImage: {
-    width: 200,
-    height: 100,
+    width: 150,
+    height: 150,
     resizeMode: 'contain'
   },
   categoryTitle: {
     fontSize: 36,
   },
-  sampleQuestions: {
-    flex: 1,
-    alignItems: 'center',
+  sampleQuestionsContainer: {
+    flex: 2,
+    alignItems:'flex-start',
     justifyContent: 'center',
     borderTopWidth: 2,
     borderBottomWidth: 2,
     borderColor: '#ededed',
-    marginLeft: 40,
-    marginRight: 40
+    marginLeft: 30,
+    marginRight: 30
   },
   sampleQuestionsTitle: {
     fontSize: 28,
+    marginTop:20,
   },
   sampleQuestionCard: {
     width: 150,
@@ -556,25 +467,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  audio: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  audioImage: {
-    width: 100,
-    height: 100,
-    borderWidth: 3,
-    borderRadius: 50,
-    backgroundColor: '#f18f70'
-  },
-  recordingContainer: {
-    flexDirection: 'row',
+  audioContainer: {
+    flex: 3,
     alignItems: 'center',
     justifyContent: 'space-around',
-    width: '100%'
+    flexDirection: 'column',
+  },
+  recordingContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  playbackContainer:{
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width:'100%'
+  },
+  playbackSlider:{
+    width:400
   },
   image: {
     backgroundColor: '#ededed'
+  },playerButton:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    height:50,
+    width:50,
+    borderRadius:25,
+    backgroundColor: "#FF0000",
   }
 });
