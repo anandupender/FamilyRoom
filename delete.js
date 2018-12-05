@@ -1,10 +1,37 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Slider, Dimensions, AsyncStorage } from 'react-native';
-import { Expo, Asset, Audio, FileSystem, Font, Permissions } from 'expo';
-import { Topics } from '../Themes'
-import { Icon } from 'react-native-elements'
+import {
+  Dimensions,
+  Image,
+  Slider,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
+import Expo, { Asset, Audio, FileSystem, Font, Permissions } from 'expo';
 
-const uris = [];
+class Icon {
+  constructor(module, width, height) {
+    this.module = module;
+    this.width = width;
+    this.height = height;
+    Asset.fromModule(this.module).downloadAsync();
+  }
+}
+
+const ICON_RECORD_BUTTON = new Icon(require('./assets/images/record_button.png'), 70, 119);
+const ICON_RECORDING = new Icon(require('./assets/images/record_icon.png'), 20, 14);
+
+const ICON_PLAY_BUTTON = new Icon(require('./assets/images/play_button.png'), 34, 51);
+const ICON_PAUSE_BUTTON = new Icon(require('./assets/images/pause_button.png'), 34, 51);
+const ICON_STOP_BUTTON = new Icon(require('./assets/images/stop_button.png'), 22, 22);
+
+const ICON_MUTED_BUTTON = new Icon(require('./assets/images/muted_button.png'), 67, 58);
+const ICON_UNMUTED_BUTTON = new Icon(require('./assets/images/unmuted_button.png'), 67, 58);
+
+const ICON_TRACK_1 = new Icon(require('./assets/images/track_1.png'), 166, 5);
+const ICON_THUMB_1 = new Icon(require('./assets/images/thumb_1.png'), 18, 19);
+const ICON_THUMB_2 = new Icon(require('./assets/images/thumb_2.png'), 15, 19);
 
 const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get('window');
 const BACKGROUND_COLOR = '#FFF8ED';
@@ -12,7 +39,7 @@ const LIVE_COLOR = '#FF0000';
 const DISABLED_OPACITY = 0.5;
 const RATE_SCALE = 3.0;
 
-export default class TopicScreen extends React.Component {
+export default class AudioScreen extends React.Component {
   constructor(props) {
     super(props);
     this.recording = null;
@@ -34,12 +61,19 @@ export default class TopicScreen extends React.Component {
       shouldCorrectPitch: true,
       volume: 1.0,
       rate: 1.0,
-      recording: "test",
     };
     this.recordingSettings = JSON.parse(JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY));
+    // // UNCOMMENT THIS TO TEST maxFileSize:
+    // this.recordingSettings.android['maxFileSize'] = 12000;
   }
 
   componentDidMount() {
+    (async () => {
+      await Font.loadAsync({
+        'cutive-mono-regular': require('./assets/fonts/CutiveMono-Regular.ttf'),
+      });
+      this.setState({ fontLoaded: true });
+    })();
     this._askForPermissions();
   }
 
@@ -131,48 +165,10 @@ export default class TopicScreen extends React.Component {
     });
     try {
       await this.recording.stopAndUnloadAsync();
-      await this.setAudioMode({ allowsRecordingIOS: false });
     } catch (error) {
-      console.log(error); // eslint-disable-line
+      // Do nothing -- we are already unloaded.
     }
-
-    if (this.recording) {
-      var fileUrl = this.recording.getURI();
-      this.setState({ recording: fileUrl });
-      try{
-        var allKeys = await AsyncStorage.getAllKeys();
-        var numFiles = 0;
-        if (allKeys !== undefined){
-          numFiles = allKeys.length;
-        }else{
-          numFiles = 0;
-        }
-
-        var fileName = "audio" + numFiles.toString();
-        await AsyncStorage.setItem(fileName, fileUrl);
-      } catch(error){
-
-      }
-    }
-
-    //MAGIC HAPPENS HERE
-
-    try {
-      const testAudioUrl = await AsyncStorage.getItem('audio4');
-      const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
-        { uri: testAudioUrl },
-        { shouldPlay: false }
-      );
-      await soundObject.playAsync();
-      // Your sound is playing!
-    } catch (error) {
-      // An error occurred!
-    }
-
     const info = await FileSystem.getInfoAsync(this.recording.getURI());
-    uris.push(this.recording.getURI());
-
-    console.log("this is all the uris", uris);
     console.log(`FILE INFO: ${JSON.stringify(info)}`);
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
@@ -215,18 +211,6 @@ export default class TopicScreen extends React.Component {
         this.sound.playAsync();
       }
     }
-    // const soundObject = new Audio.Sound();
-    // var uri = uris[0];
-    // console.log(uri);
-    // try {
-    //   var uri = "" + this.uris[0];
-    //   console.log(uri);
-    //   await soundObject.loadAsync(require(uri));
-    //   await soundObject.playAsync();
-    //   // Your sound is playing!
-    // } catch (error) {
-    //   // An error occurred!
-    // }
   };
 
   _onStopPressed = () => {
@@ -332,161 +316,269 @@ export default class TopicScreen extends React.Component {
   }
 
   render() {
-    //this contains all paramaters sent from previous profile screen
-    const params = this.props.navigation.state.params;
-
-    return (
+    return !this.state.fontLoaded ? (
+      <View style={styles.emptyContainer} />
+    ) : !this.state.haveRecordingPermissions ? (
       <View style={styles.container}>
-
-        <View style={styles.categoryContainer}>
-          <Image
-            source={require('../../assets/images/recordPlayer.png')}
-            style={styles.categoryImage}
-          />
-          <Text style={styles.categoryTitle}> On {(params !== undefined) ? params.topic : 'Sample Topic'} </Text>
-        </View>
-
-        <View style={styles.sampleQuestionsContainer}>
-          <Text style={styles.sampleQuestionsTitle}> Sample Questions </Text>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            data={params.questions}
-            renderItem={({ item: rowData}) => {
-              return (
-                  <View style={styles.sampleQuestionCard}>
-                    <Text> {rowData} </Text>
-                  </View>
-              );
-            }}
-            keyExtractor={(item, index) => params.questions[index]}
-          />
-        </View>
-
-
-        <View style={styles.audioContainer}>
+        <View />
+        <Text style={[styles.noPermissionsText, { fontFamily: 'cutive-mono-regular' }]}>
+          You must enable audio recording permissions in order to use this app.
+        </Text>
+        <View />
+      </View>
+    ) : (
+      <View style={styles.container}>
+        <View
+          style={[
+            styles.halfScreenContainer,
+            {
+              opacity: this.state.isLoading ? DISABLED_OPACITY : 1.0,
+            },
+          ]}>
+          <View />
           <View style={styles.recordingContainer}>
-            <TouchableOpacity
-              style={styles.playerButton}
+            <View />
+            <TouchableHighlight
+              underlayColor={BACKGROUND_COLOR}
+              style={styles.wrapper}
               onPress={this._onRecordPressed}
               disabled={this.state.isLoading}>
-              <Icon name='mic' color='#FFFFFF' type='feather'/>
-            </TouchableOpacity>
+              <Image style={styles.image} source={ICON_RECORD_BUTTON.module} />
+            </TouchableHighlight>
             <View style={styles.recordingDataContainer}>
-              <Text style={styles.recordingTimestamp}>
-                {this._getRecordingTimestamp()}
+              <View />
+              <Text style={[styles.liveText, { fontFamily: 'cutive-mono-regular' }]}>
+                {this.state.isRecording ? 'LIVE' : ''}
               </Text>
+              <View style={styles.recordingDataRowContainer}>
+                <Image
+                  style={[styles.image, { opacity: this.state.isRecording ? 1.0 : 0.0 }]}
+                  source={ICON_RECORDING.module}
+                />
+                <Text style={[styles.recordingTimestamp, { fontFamily: 'cutive-mono-regular' }]}>
+                  {this._getRecordingTimestamp()}
+                </Text>
+              </View>
+              <View />
             </View>
+            <View />
           </View>
-
+          <View />
+        </View>
+        <View
+          style={[
+            styles.halfScreenContainer,
+            {
+              opacity:
+                !this.state.isPlaybackAllowed || this.state.isLoading ? DISABLED_OPACITY : 1.0,
+            },
+          ]}>
+          <View />
           <View style={styles.playbackContainer}>
             <Slider
               style={styles.playbackSlider}
+              trackImage={ICON_TRACK_1.module}
+              thumbImage={ICON_THUMB_1.module}
               value={this._getSeekSliderPosition()}
               onValueChange={this._onSeekSliderValueChange}
               onSlidingComplete={this._onSeekSliderSlidingComplete}
               disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
             />
-            <Text style={styles.playbackTimestamp}>
+            <Text style={[styles.playbackTimestamp, { fontFamily: 'cutive-mono-regular' }]}>
               {this._getPlaybackTimestamp()}
             </Text>
           </View>
           <View style={[styles.buttonsContainerBase, styles.buttonsContainerTopRow]}>
-            <View style={styles.playStopContainer}>
-              <TouchableOpacity
+            <View style={styles.volumeContainer}>
+              <TouchableHighlight
                 underlayColor={BACKGROUND_COLOR}
-                style={styles.playerButton}
+                style={styles.wrapper}
+                onPress={this._onMutePressed}
+                disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
+                <Image
+                  style={styles.image}
+                  source={this.state.muted ? ICON_MUTED_BUTTON.module : ICON_UNMUTED_BUTTON.module}
+                />
+              </TouchableHighlight>
+              <Slider
+                style={styles.volumeSlider}
+                trackImage={ICON_TRACK_1.module}
+                thumbImage={ICON_THUMB_2.module}
+                value={1}
+                onValueChange={this._onVolumeSliderValueChange}
+                disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
+              />
+            </View>
+            <View style={styles.playStopContainer}>
+              <TouchableHighlight
+                underlayColor={BACKGROUND_COLOR}
+                style={styles.wrapper}
                 onPress={this._onPlayPausePressed}
                 disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
-                <Icon
-                  name={this.state.isPlaying ? "pause" : "play"}
-                  type='feather'
-                  color='#FFFFFF' />
-              </TouchableOpacity>
+                <Image
+                  style={styles.image}
+                  source={this.state.isPlaying ? ICON_PAUSE_BUTTON.module : ICON_PLAY_BUTTON.module}
+                />
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor={BACKGROUND_COLOR}
+                style={styles.wrapper}
+                onPress={this._onStopPressed}
+                disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
+                <Image style={styles.image} source={ICON_STOP_BUTTON.module} />
+              </TouchableHighlight>
             </View>
+            <View />
           </View>
+          <View style={[styles.buttonsContainerBase, styles.buttonsContainerBottomRow]}>
+            <Text style={[styles.timestamp, { fontFamily: 'cutive-mono-regular' }]}>Rate:</Text>
+            <Slider
+              style={styles.rateSlider}
+              trackImage={ICON_TRACK_1.module}
+              thumbImage={ICON_THUMB_1.module}
+              value={this.state.rate / RATE_SCALE}
+              onSlidingComplete={this._onRateSliderSlidingComplete}
+              disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
+            />
+            <TouchableHighlight
+              underlayColor={BACKGROUND_COLOR}
+              style={styles.wrapper}
+              onPress={this._onPitchCorrectionPressed}
+              disabled={!this.state.isPlaybackAllowed || this.state.isLoading}>
+              <Text style={[{ fontFamily: 'cutive-mono-regular' }]}>
+                PC: {this.state.shouldCorrectPitch ? 'yes' : 'no'}
+              </Text>
+            </TouchableHighlight>
+          </View>
+          <View />
         </View>
-
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    alignSelf: 'stretch',
+    backgroundColor: BACKGROUND_COLOR,
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#fff',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: BACKGROUND_COLOR,
+    minHeight: DEVICE_HEIGHT,
+    maxHeight: DEVICE_HEIGHT,
   },
-  categoryContainer: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center'
+  noPermissionsText: {
+    textAlign: 'center',
   },
-  categoryImage: {
-    width: 150,
-    height: 150,
-    resizeMode: 'contain'
-  },
-  categoryTitle: {
-    fontSize: 36,
-  },
-  sampleQuestionsContainer: {
-    flex: 2,
-    alignItems:'flex-start',
-    justifyContent: 'center',
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: '#ededed',
-    marginLeft: 30,
-    marginRight: 30
-  },
-  sampleQuestionsTitle: {
-    fontSize: 28,
-    marginTop:20,
-  },
-  sampleQuestionCard: {
-    width: 150,
-    height: 150,
-    borderWidth: 2,
-    borderRadius: 15,
-    borderColor: '#ededed',
-    margin: 15,
-    marginBottom: 0,
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  audioContainer: {
-    flex: 3,
-    alignItems: 'center',
-    justifyContent: 'space-around',
+  wrapper: {},
+  halfScreenContainer: {
+    flex: 1,
     flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    minHeight: DEVICE_HEIGHT / 2.0,
+    maxHeight: DEVICE_HEIGHT / 2.0,
   },
   recordingContainer: {
-    flexDirection: 'column',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    alignSelf: 'stretch',
+    minHeight: ICON_RECORD_BUTTON.height,
+    maxHeight: ICON_RECORD_BUTTON.height,
   },
-  playbackContainer:{
+  recordingDataContainer: {
+    flex: 1,
     flexDirection: 'column',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    width:'100%'
+    minHeight: ICON_RECORD_BUTTON.height,
+    maxHeight: ICON_RECORD_BUTTON.height,
+    minWidth: ICON_RECORD_BUTTON.width * 3.0,
+    maxWidth: ICON_RECORD_BUTTON.width * 3.0,
   },
-  playbackSlider:{
-    width:400
+  recordingDataRowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    minHeight: ICON_RECORDING.height,
+    maxHeight: ICON_RECORDING.height,
+  },
+  playbackContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    minHeight: ICON_THUMB_1.height * 2.0,
+    maxHeight: ICON_THUMB_1.height * 2.0,
+  },
+  playbackSlider: {
+    alignSelf: 'stretch',
+  },
+  liveText: {
+    color: LIVE_COLOR,
+  },
+  recordingTimestamp: {
+    paddingLeft: 20,
+  },
+  playbackTimestamp: {
+    textAlign: 'right',
+    alignSelf: 'stretch',
+    paddingRight: 20,
   },
   image: {
-    backgroundColor: '#ededed'
-  },playerButton:{
+    backgroundColor: BACKGROUND_COLOR,
+  },
+  textButton: {
+    backgroundColor: BACKGROUND_COLOR,
+    padding: 10,
+  },
+  buttonsContainerBase: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    height:50,
-    width:50,
-    borderRadius:25,
-    backgroundColor: "#FF0000",
-  }
+    justifyContent: 'space-between',
+  },
+  buttonsContainerTopRow: {
+    maxHeight: ICON_MUTED_BUTTON.height,
+    alignSelf: 'stretch',
+    paddingRight: 20,
+  },
+  playStopContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minWidth: (ICON_PLAY_BUTTON.width + ICON_STOP_BUTTON.width) * 3.0 / 2.0,
+    maxWidth: (ICON_PLAY_BUTTON.width + ICON_STOP_BUTTON.width) * 3.0 / 2.0,
+  },
+  volumeContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minWidth: DEVICE_WIDTH / 2.0,
+    maxWidth: DEVICE_WIDTH / 2.0,
+  },
+  volumeSlider: {
+    width: DEVICE_WIDTH / 2.0 - ICON_MUTED_BUTTON.width,
+  },
+  buttonsContainerBottomRow: {
+    maxHeight: ICON_THUMB_1.height,
+    alignSelf: 'stretch',
+    paddingRight: 20,
+    paddingLeft: 20,
+  },
+  rateSlider: {
+    width: DEVICE_WIDTH / 2.0,
+  },
 });
