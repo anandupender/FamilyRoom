@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Slider, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Slider, Dimensions, AsyncStorage } from 'react-native';
 import Expo, { Asset, Audio, FileSystem, Font, Permissions } from 'expo';
 
 const data = [
@@ -179,16 +179,29 @@ export default class TopicScreen extends React.Component {
 
     if (this.recording) {
       var fileUrl = this.recording.getURI();
-      // props.recording.setOnRecordingStatusUpdate(null);
       this.setState({ recording: fileUrl });
+      try{
+        var allKeys = await AsyncStorage.getAllKeys();
+        var numFiles = 0;
+        if (allKeys !== undefined){
+          numFiles = allKeys.length;
+        }else{
+          numFiles = 0;
+        }
+
+        var fileName = "audio" + numFiles.toString();
+        await AsyncStorage.setItem(fileName, fileUrl);
+      } catch(error){
+
+      }
     }
 
-    //MAGIC HAPPENS HERE. CURRENTLY THIS IS HERE JUST TO TEST PLAYING THE AUDIO BACK
-    //FROM THE RECENTLY CREATED URL
+    //MAGIC HAPPENS HERE
 
     try {
+      const testAudioUrl = await AsyncStorage.getItem('audio4');
       const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
-        { uri: this.state.recording },
+        { uri: testAudioUrl },
         { shouldPlay: true }
       );
       // Your sound is playing!
