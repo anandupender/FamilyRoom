@@ -20,6 +20,8 @@ const data = [
   }
 ];
 
+const uris = [];
+
 class Icon {
   constructor(module, width, height) {
     this.module = module;
@@ -173,6 +175,9 @@ export default class TopicScreen extends React.Component {
       // Do nothing -- we are already unloaded.
     }
     const info = await FileSystem.getInfoAsync(this.recording.getURI());
+    uris.push(this.recording.getURI());
+
+    console.log("this is all the uris", uris);
     console.log(`FILE INFO: ${JSON.stringify(info)}`);
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
@@ -215,6 +220,18 @@ export default class TopicScreen extends React.Component {
         this.sound.playAsync();
       }
     }
+    // const soundObject = new Audio.Sound();
+    // var uri = uris[0];
+    // console.log(uri);
+    // try {
+    //   var uri = "" + this.uris[0];
+    //   console.log(uri);
+    //   await soundObject.loadAsync(require(uri));
+    //   await soundObject.playAsync();
+    //   // Your sound is playing!
+    // } catch (error) {
+    //   // An error occurred!
+    // }
   };
 
   _onStopPressed = () => {
