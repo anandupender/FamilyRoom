@@ -1,24 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Slider, Dimensions, AsyncStorage } from 'react-native';
-import Expo, { Asset, Audio, FileSystem, Font, Permissions } from 'expo';
-
-const data = [
-  {
-    question: "\"How many different times have you moved?\""
-  },
-  {
-    question: "\"When did you move to your current home?\""
-  },
-  {
-    question: "\"Have you ever lived alone?\""
-  },
-  {
-    question: "\"What was your scariest move?\""
-  },
-  {
-    question: "\"Can you tell me about your favorite objects you always live with?\""
-  }
-];
+import { Expo, Asset, Audio, FileSystem, Font, Permissions } from 'expo';
+import { Topics } from '../Themes'
 
 const uris = [];
 
@@ -75,7 +58,6 @@ export default class TopicScreen extends React.Component {
       volume: 1.0,
       rate: 1.0,
       recording: "test",
-      data: data,
     };
     this.recordingSettings = JSON.parse(JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY));
   }
@@ -394,15 +376,15 @@ export default class TopicScreen extends React.Component {
           <FlatList
             showsHorizontalScrollIndicator={false}
             horizontal
-            data={this.state.data}
-            renderItem={({ item: rowData }) => {
+            data={params.questions}
+            renderItem={({ item: rowData}) => {
               return (
                   <View style={styles.sampleQuestionCard}>
-                    <Text> {rowData.question} </Text>
+                    <Text> {rowData} </Text>
                   </View>
               );
             }}
-            keyExtractor={(item, index) => item.question}
+            keyExtractor={(item, index) => params.questions[index]}
           />
         </View>
 

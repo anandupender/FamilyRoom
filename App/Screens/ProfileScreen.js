@@ -1,25 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
-
-const data = [
-  { topic: "Moving" },
-  { topic: "New Jobs" },
-  { topic: "Marriage" },
-  { topic: "Life Advice" },
-  { topic: "Jealousy" },
-  { topic: "War Time" }
-];
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
+import { Topics } from '../Themes'
 
 export default class ProfileScreen extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: data,
+      data: Topics,
     }
   }
 
-  _goToTopic = (currTopic) => {
-    this.props.navigation.navigate("Topic", { topic: currTopic });
+  _goToTopic = (currTopic, topicQuestions) => {
+    this.props.navigation.navigate("Topic", { topic: currTopic, questions: topicQuestions});
   }
 
   render() {
@@ -27,8 +19,10 @@ export default class ProfileScreen extends React.Component {
       <View style={styles.container}>
 
         <View style={styles.category}>
-          <View style={styles.categoryImage}>
-          </View>
+          <Image
+            source={require('../../assets/images/previous/recordPlayer.png')}
+            style={styles.categoryImage}
+          />
 
           <Text style={styles.categoryTitle}> Baji's Records </Text>
         </View>
@@ -37,14 +31,17 @@ export default class ProfileScreen extends React.Component {
 
         <View style={styles.allRecords}>
           <FlatList
+            showsVerticalScrollIndicator={false}
             numColumns={2}
             data={this.state.data}
             renderItem={({ item: rowData }) => {
               return (
-                <TouchableOpacity onPress={() => this._goToTopic(rowData.topic)} style={styles.recordContainer}>
-                  <View style={styles.record}>
-                  </View>
-                  <Text style={styles.recordTitle}> {rowData.topic} </Text>
+                <TouchableOpacity onPress={() => this._goToTopic(rowData.title, rowData.questions)} style={styles.recordContainer}>
+                  <Image
+                    source={require('../../assets/images/previous/record.png')}
+                    style={styles.record}
+                  />
+                  <Text style={styles.recordTitle}> {rowData.title} </Text>
                 </TouchableOpacity>
               );
             }}
@@ -73,8 +70,7 @@ const styles = StyleSheet.create({
   categoryImage: {
     width: 200,
     height: 100,
-    borderWidth: 3,
-    backgroundColor: '#71f2e1',
+    resizeMode: 'contain'
   },
   categoryTitle: {
     fontSize: 36,
@@ -94,13 +90,12 @@ const styles = StyleSheet.create({
   record: {
     width: 150,
     height: 150,
-    borderWidth: 2,
-    borderRadius: 150/2,
     margin: 15,
     marginBottom: 0,
     padding: 10,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    resizeMode: 'contain'
   },
   recordTitle:{
     fontSize:18
