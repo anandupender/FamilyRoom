@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
 import { Topics } from '../Themes'
 
+
 export default class ProfileScreen extends React.Component {
   constructor() {
     super();
@@ -19,10 +20,7 @@ export default class ProfileScreen extends React.Component {
       <View style={styles.container}>
 
         <View style={styles.category}>
-          <Image
-            source={require('../../assets/images/previous/recordPlayer.png')}
-            style={styles.categoryImage}
-          />
+          <Image style={styles.categoryImage} source={require('../../assets/images/mina.jpg')}/>
 
           <Text style={styles.categoryTitle}> Baji's Records </Text>
         </View>
@@ -68,9 +66,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   categoryImage: {
-    width: 200,
-    height: 100,
-    resizeMode: 'contain'
+    width: 220,
+    height: 150,
+    // borderWidth: 3,
+    backgroundColor: '#EEEEEE',
   },
   categoryTitle: {
     fontSize: 36,
@@ -98,6 +97,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
   recordTitle:{
+    marginTop:10,
     fontSize:18
   }
 });
