@@ -158,7 +158,7 @@ export default class OldTopicScreen extends React.Component {
     //MAGIC HAPPENS HERE
 
     try {
-      const testAudioUrl = await AsyncStorage.getItem('audio4');
+      const testAudioUrl = await AsyncStorage.getItem('question2');
       const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
         { uri: testAudioUrl },
         { shouldPlay: false }
@@ -168,6 +168,7 @@ export default class OldTopicScreen extends React.Component {
     } catch (error) {
       // An error occurred!
     }
+
 
     const info = await FileSystem.getInfoAsync(this.recording.getURI());
     uris.push(this.recording.getURI());
@@ -215,18 +216,6 @@ export default class OldTopicScreen extends React.Component {
         this.sound.playAsync();
       }
     }
-    // const soundObject = new Audio.Sound();
-    // var uri = uris[0];
-    // console.log(uri);
-    // try {
-    //   var uri = "" + this.uris[0];
-    //   console.log(uri);
-    //   await soundObject.loadAsync(require(uri));
-    //   await soundObject.playAsync();
-    //   // Your sound is playing!
-    // } catch (error) {
-    //   // An error occurred!
-    // }
   };
 
   _onStopPressed = () => {
@@ -331,9 +320,30 @@ export default class OldTopicScreen extends React.Component {
     return `${this._getMMSSFromMillis(0)}`;
   }
 
+
+  _playCurrAudio = async index => {
+    try {
+      const audioName = "question" + index.toString();
+      const testAudioUrl = await AsyncStorage.getItem(audioName);
+      console.log("asdf", testAudioUrl);
+      const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
+        { uri: testAudioUrl },
+        { shouldPlay: true }
+      );
+      await soundObject.playAsync();
+      // Your sound is playing!
+    } catch (error) {
+      // An error occurred!
+    }
+
+  }
+
+
   render() {
     //this contains all paramaters sent from previous profile screen
     const params = this.props.navigation.state.params;
+    var familyImages = [{image:require('../../assets/images/anand.jpg')},{image:require('../../assets/images/madhvi.jpeg')},{image:require('../../assets/images/barg.jpg')}];
+
 
     return (
       <View style={styles.container}>
@@ -347,15 +357,27 @@ export default class OldTopicScreen extends React.Component {
         </View>
 
         <View style={styles.sampleQuestionsContainer}>
-          <Text style={styles.sampleQuestionsTitle}> Sample Questions </Text>
+          <Text style={styles.sampleQuestionsTitle}> Questions From Your Family </Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
             horizontal
-            data={params.questions}
-            renderItem={({ item: rowData}) => {
+            data={familyImages}
+            renderItem={({ item, index }) => {
               return (
-                  <View style={styles.sampleQuestionCard}>
-                    <Text> {rowData} </Text>
+                  <View style={styles.questionCard}>
+                    <Image
+                      source={familyImages[index].image}
+                      style={styles.questionCardImage}
+                    />
+                    <TouchableOpacity
+                      underlayColor={BACKGROUND_COLOR}
+                      style={styles.questionPlayerButton}
+                      onPress={() => this._playCurrAudio(index)}>
+                      <Icon
+                        name={this.state.isPlaying ? "pause" : "play"}
+                        type='feather'
+                        color='#FFFFFF' />
+                    </TouchableOpacity>
                   </View>
               );
             }}
@@ -447,17 +469,22 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginTop:20,
   },
-  sampleQuestionCard: {
+  questionCard: {
     width: 120,
     height: 120,
-    borderWidth: 2,
     borderRadius: 15,
-    borderColor: '#ededed',
     margin: 15,
     marginBottom: 0,
-    padding: 10,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  questionCardImage:{
+    flex: 1,
+    alignSelf: 'stretch',
+    width: undefined,
+    height: undefined,
+    resizeMode:'cover',
+    borderRadius: 15,
   },
   audioContainer: {
     flex: 2,
@@ -489,6 +516,15 @@ const styles = StyleSheet.create({
     height:50,
     width:50,
     borderRadius:25,
+    backgroundColor: "#FF0000",
+  },
+  questionPlayerButton:{
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height:30,
+    width:30,
+    borderRadius:15,
     backgroundColor: "#FF0000",
   }
 });

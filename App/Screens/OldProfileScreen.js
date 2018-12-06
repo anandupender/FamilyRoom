@@ -22,7 +22,7 @@ export default class OldProfileScreen extends React.Component {
         <View style={styles.category}>
           <Image style={styles.categoryImage} source={require('../../assets/images/mina.jpg')}/>
 
-          <Text style={styles.categoryTitle}> Baji's Records </Text>
+          <Text style={styles.categoryTitle}> Your Records </Text>
         </View>
 
 

@@ -131,7 +131,6 @@ export default class YoungTopicScreen extends React.Component {
     });
     try {
       await this.recording.stopAndUnloadAsync();
-      await this.setAudioMode({ allowsRecordingIOS: false });
     } catch (error) {
       console.log(error); // eslint-disable-line
     }
@@ -141,6 +140,7 @@ export default class YoungTopicScreen extends React.Component {
       this.setState({ recording: fileUrl });
       try{
         var allKeys = await AsyncStorage.getAllKeys();
+        console.log("all keys: ", allKeys);
         var numFiles = 0;
         if (allKeys !== undefined){
           numFiles = allKeys.length;
@@ -148,7 +148,7 @@ export default class YoungTopicScreen extends React.Component {
           numFiles = 0;
         }
 
-        var fileName = "audio" + numFiles.toString();
+        var fileName = "question" + numFiles.toString();
         await AsyncStorage.setItem(fileName, fileUrl);
       } catch(error){
 
@@ -158,7 +158,7 @@ export default class YoungTopicScreen extends React.Component {
     //MAGIC HAPPENS HERE
 
     try {
-      const testAudioUrl = await AsyncStorage.getItem('audio4');
+      const testAudioUrl = await AsyncStorage.getItem('question2');
       const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
         { uri: testAudioUrl },
         { shouldPlay: false }
@@ -169,11 +169,7 @@ export default class YoungTopicScreen extends React.Component {
       // An error occurred!
     }
 
-    const info = await FileSystem.getInfoAsync(this.recording.getURI());
-    uris.push(this.recording.getURI());
 
-    console.log("this is all the uris", uris);
-    console.log(`FILE INFO: ${JSON.stringify(info)}`);
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,

@@ -1,6 +1,6 @@
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 import YoungProfileScreen from '../Screens/YoungProfileScreen'
-import YoungTopicScreen from '../Screens/YoungTopicScreen'
+import YoungTopicScreen from '../Screens/TopicScreen'
 import OnboardingScreen from '../Screens/OnboardingScreen'
 
 const YoungStack = createStackNavigator({
