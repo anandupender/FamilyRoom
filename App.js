@@ -1,12 +1,12 @@
 import React from 'react';
 
-import AppContainer from './App/Navigation/StackNavigation'
+import TabNavigator from './App/Navigation/TabNavigation'
 
 export default class App extends React.Component {
 
   render() {
     return (
-      <AppContainer/>
-    );
+      <TabNavigator/>
+    )
   }
 }

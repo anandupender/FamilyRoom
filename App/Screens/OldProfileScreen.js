@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image} from 'react-
 import { Topics } from '../Themes'
 
 
-export default class ProfileScreen extends React.Component {
+export default class OldProfileScreen extends React.Component {
   constructor() {
     super();
     this.state = {

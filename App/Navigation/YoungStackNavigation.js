@@ -1,11 +1,11 @@
 import { createAppContainer, createStackNavigator } from 'react-navigation';
-import ProfileScreen from '../Screens/ProfileScreen'
-import TopicScreen from '../Screens/TopicScreen'
+import YoungProfileScreen from '../Screens/YoungProfileScreen'
+import YoungTopicScreen from '../Screens/YoungTopicScreen'
 import OnboardingScreen from '../Screens/OnboardingScreen'
 
-const AppNavigator = createStackNavigator({
-  Profile: { screen: ProfileScreen },
-  Topic: { screen: TopicScreen },
+const YoungStack = createStackNavigator({
+  Profile: { screen: YoungProfileScreen },
+  Topic: { screen: YoungTopicScreen },
   Onboarding: { screen: OnboardingScreen}
 }, {
   headerMode: 'float',
@@ -24,6 +24,4 @@ const AppNavigator = createStackNavigator({
   }
 });
 
-const AppContainer = createAppContainer(AppNavigator);
-
-export default AppContainer;
+export default createAppContainer(YoungStack);
